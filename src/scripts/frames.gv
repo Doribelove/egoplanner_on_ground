@@ -1,0 +1,9 @@
+digraph G {
+"camera_init" -> "body"[label="Broadcaster: /laserMapping\nAverage rate: 10.202 Hz\nMost recent transform: 1772955188.822 ( 0.007 sec old)\nBuffer length: 4.999 sec\n"];
+"body" -> "base_link"[label="Broadcaster: /body_to_base_link\nAverage rate: 10.194 Hz\nMost recent transform: 1772955188.896 ( -0.067 sec old)\nBuffer length: 4.905 sec\n"];
+"camera_init" -> "map"[label="Broadcaster: /world_to_map\nAverage rate: 10.192 Hz\nMost recent transform: 1772955188.902 ( -0.072 sec old)\nBuffer length: 4.906 sec\n"];
+edge [style=invis];
+ subgraph cluster_legend { style=bold; color=black; label ="view_frames Result";
+"Recorded at time: 1772955188.830"[ shape=plaintext ] ;
+ }->"camera_init";
+}

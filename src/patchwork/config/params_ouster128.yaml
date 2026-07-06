@@ -1,0 +1,48 @@
+sensor_height: 1.4        # 你的雷达安装高度
+save_flag: false          # 不需要保存pcd文件
+
+# Extrinsics
+extrinsic_trans: [0.0, 0.0, 0.0]
+extrinsic_rot: [1, 0, 0,
+               0, 1, 0,
+               0, 0, 1]
+
+patchwork:
+    mode: "czm" 
+    verbose: false 
+    visualize: true       # 调试完可以关掉以节省性能
+    
+    # Ground Plane Fitting parameters
+    num_iter: 3
+    num_lpr: 20
+    num_min_pts: 10
+    th_seeds: 0.3         # 种子点选取高度阈值
+    th_dist: 0.15         # [微调]稍微放大，适应Mid360的噪点
+    max_r: 80.0           # [微调] Mid360有效距离不用太远，80m足够
+    
+    # [!!!关键修改!!!] 盲区改为 0.7m
+    # 这意味着车身周围 0.7m 半径内的点云（包括车体本身）都会被忽略
+    min_r: 0.6            
+    
+    uprightness_thr: 0.707 
+
+    # 过滤极低点（比如天井、反光造成的地下噪点）
+    # -1.1 * 1.4 = -1.54m，在这个高度以下的点会被丢弃，很合理
+    adaptive_seed_selection_margin: -1.1
+    
+    using_global_elevation: false
+    global_elevation_threshold: -0.5
+    
+    czm:
+        # 针对 Mid-360 这种高密度点云，区域可以不用分那么细，或者保持原样
+        num_zones: 4
+        num_sectors_each_zone: [16, 32 ,54, 32]
+        num_rings_each_zone: [2, 4, 4, 4]
+        
+        # [!!!关键修改!!!] 数组第一个数必须改成 0.7，与上面的 min_r 保持一致！
+        min_ranges_each_zone: [0.6, 5.0, 15.0, 30.0]
+
+        # 高度阈值：允许的地面起伏程度
+        # 随着距离变远，允许更大的起伏
+        elevation_thresholds:  [0.3, 0.5, 0.8, 1.0] 
+        flatness_thresholds:  [0.0, 0.000125, 0.000185, 0.000185]

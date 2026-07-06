@@ -1,0 +1,66 @@
+<launch>
+  <arg name="map_size_x" value="100"/>    <arg name="map_size_y" value="100"/>
+  <arg name="map_size_z" value="2.0"/>     <arg name="odom_topic" value="/Odometry" />
+  <arg name="pointcloud_topic" value="/cloud_registered" />
+
+  <node pkg="tf" type="static_transform_publisher" name="body_to_base_link" 
+        args="-0.1 0 -1.4 0 0 0 body base_link 100" />
+  
+  <node pkg="tf" type="static_transform_publisher" name="world_to_map" 
+        args="0 0 0 0 0 0 camera_init map 100" />
+
+  <include file="$(find ego_planner)/launch/advanced_param.xml">
+    <arg name="map_size_x_" value="$(arg map_size_x)"/>
+    <arg name="map_size_y_" value="$(arg map_size_y)"/>
+    <arg name="map_size_z_" value="$(arg map_size_z)"/>
+    <arg name="odometry_topic" value="$(arg odom_topic)"/>
+
+    <arg name="camera_pose_topic" value="/pcl_render_node/camera_pose"/>
+    <arg name="depth_topic" value="/pcl_render_node/depth"/>
+
+    <arg name="cloud_topic" value="/planning/flat_cloud"/>
+    
+    <arg name="goal_topic" value="/move_base_simple/goal"/>
+
+    <arg name="cx" value="321.04638671875"/>
+    <arg name="cy" value="243.44969177246094"/>
+    <arg name="fx" value="387.229248046875"/>
+    <arg name="fy" value="387.229248046875"/>
+
+    <arg name="max_vel" value="1.5" />
+    <arg name="max_acc" value="1.2" />
+
+    <arg name="planning_horizon" value="6.0" />
+
+    <arg name="flight_type" value="1" />
+    <arg name="point_num" value="5" />
+
+    <arg name="point0_x" value="-15.0" /> <arg name="point0_y" value="0.0" /> <arg name="point0_z" value="1.0" />
+    <arg name="point1_x" value="0.0" />   <arg name="point1_y" value="15.0" /> <arg name="point1_z" value="1.0" />
+    <arg name="point2_x" value="15.0" />  <arg name="point2_y" value="0.0" />  <arg name="point2_z" value="1.0" />
+    <arg name="point3_x" value="0.0" />   <arg name="point3_y" value="-15.0" /> <arg name="point3_z" value="1.0" />
+    <arg name="point4_x" value="-15.0" /> <arg name="point4_y" value="0.0" /> <arg name="point4_z" value="1.0" />
+    <remap from="/cmd_vel" to="/junk_cmd_vel_ego"/>
+  </include>
+
+  <node pkg="ego_planner" name="traj_server" type="traj_server" output="screen">
+    <remap from="/position_cmd" to="planning/pos_cmd"/>
+    <remap from="/odom_world" to="$(arg odom_topic)"/>
+    <param name="traj_server/time_forward" value="1.0" type="double"/>
+  </node>
+
+  
+  <node pkg="ego_planner" type="cloud_flattener_node" name="cloud_flattener_node" output="screen">
+        <param name="cloud_flattener/input_topic" value="/cloud_registered"/>
+        
+        <param name="cloud_flattener/output_topic" value="/planning/flat_cloud"/>
+        
+        <param name="cloud_flattener/min_height" value="0.0"/>
+        <param name="cloud_flattener/max_height" value="0.8"/>
+        <param name="cloud_flattener/wall_height" value="2.0"/>
+        <param name="cloud_flattener/resolution" value="0.1"/>
+    </node>
+
+  <include file="$(find ego_planner)/launch/rviz.launch"/>
+
+</launch>

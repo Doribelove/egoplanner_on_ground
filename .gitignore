@@ -1,0 +1,55 @@
+# Build outputs
+/build/
+/devel/
+/install/
+/logs/
+/.catkin_tools/
+build/
+devel/
+install/
+logs/
+
+# Local editor and Codex metadata
+/.vscode/
+/.agents/
+/.codex/
+
+# ROS runtime data
+/.ros/
+*.bag
+*.db3
+*.active
+*.log
+
+# Large point cloud/data captures
+*.pcd
+*.ply
+*.csv
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+
+# C/C++ build byproducts
+*.o
+*.a
+*.so
+*.dylib
+*.dll
+*.exe
+*.out
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+CTestTestfile.cmake
+Makefile
+
+# OS/editor noise
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
