@@ -372,13 +372,7 @@ rostopic hz /map_2d
 
 ## 已知问题和部署注意事项
 
-1. `traj_server.cpp` 当前硬编码订阅 `/state_estimation`：
-
-   ```cpp
-   ros::Subscriber odom_sub = node.subscribe("/state_estimation", 10, odometryCallback);
-   ```
-
-   但 `run_in_real.launch` 和 `run_in_real2.launch` 中给 `traj_server` remap 的是 `/odom_world`。因此如果实车里程计只有 `/Odometry`，`traj_server` 可能收不到里程计，表现为有规划轨迹但没有正确速度输出。建议将源码改为订阅 `/odom_world`，或在系统中额外发布 `/state_estimation`。
+1. 两个实车启动文件将规划节点和轨迹跟踪节点的里程计输入都接到 `/Odometry`。仿真入口 `run_in_sim.launch` 使用 `/state_estimation`。
 
 2. `single_run_in_exp.launch` 引用了不存在的 `advanced_param_real.xml`，当前不建议作为启动入口。可参考 `run_in_real.launch` 或 `run_in_real2.launch` 修改。
 
@@ -407,7 +401,7 @@ rostopic hz /map_2d
 
 - `/planning/bspline` 是否发布。
 - `/cmd_vel` 是否发布。
-- `traj_server` 是否收到里程计。当前源码默认订阅 `/state_estimation`。
+- 运行 `rosnode info /traj_server`，确认订阅的里程计话题有数据。
 - 底盘驱动是否订阅 `/cmd_vel`。
 
 ### 车体绕障过近
@@ -432,7 +426,6 @@ rostopic hz /map_2d
 
 ## 后续建议
 
-- 将 `traj_server` 的里程计话题改为参数或正确支持 launch remap。
 - 把车辆轴距、最小转弯半径、MPC 预测步长从宏定义改为 ROS 参数。
 - 增加一个统一的 `bringup.launch`，明确选择 `patchwork` 或 `cloud_flattener` 点云链路。
 - 删除或修复失效 launch，例如 `single_run_in_exp.launch`。
